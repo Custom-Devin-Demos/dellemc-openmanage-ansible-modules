@@ -860,15 +860,15 @@ def perform_force_reboot(module, session_obj):
 
 
 def perform_reboot(module, session_obj):
-    payload = {"ResetType": "GracefulRestart"}
     force_reboot = module.params.get("force_reboot")
+    payload = {"ResetType": "ForceRestart" if force_reboot else "GracefulRestart"}
     job_resp_status, reset_status, reset_fail = wait_for_redfish_reboot_job(session_obj, SYSTEM_ID, payload=payload)
     if reset_status and job_resp_status:
         job_uri = MANAGER_JOB_ID_URI_10.format(job_resp_status["Id"])
         resp, msg = wait_for_job_completion(session_obj, job_uri, wait_timeout=module.params.get("job_wait_timeout"))
         if resp:
             job_data = strip_substr_dict(resp.json_data)
-            if force_reboot and job_data["JobState"] == "Failed":
+            if not force_reboot and job_data["JobState"] == "Failed":
                 perform_force_reboot(module, session_obj)
         else:
             resp = session_obj.invoke_request("GET", job_uri)
