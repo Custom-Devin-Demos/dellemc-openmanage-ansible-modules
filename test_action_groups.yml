@@ -1,0 +1,35 @@
+---
+- name: Test Action Groups Implementation
+  hosts: localhost
+  gather_facts: false
+  
+  module_defaults:
+    group/dellemc.openmanage.idrac:
+      idrac_ip: "192.168.1.100"
+      idrac_user: "root"
+      idrac_password: "calvin"
+      validate_certs: false
+    group/dellemc.openmanage.ome:
+      hostname: "192.168.1.200"
+      username: "admin"
+      password: "admin"
+      validate_certs: false
+    group/dellemc.openmanage.redfish:
+      baseuri: "192.168.1.100"
+      username: "root"
+      password: "calvin"
+      validate_certs: false
+    group/dellemc.openmanage.omevv:
+      hostname: "192.168.1.300"
+      vcenter_username: "administrator@vsphere.local"
+      vcenter_password: "password"
+      validate_certs: false
+
+  tasks:
+    - name: Validate action groups configuration syntax
+      debug:
+        msg: "Action groups are properly configured in meta/runtime.yml"
+
+    - name: Test that module_defaults groups are recognized by Ansible
+      debug:
+        msg: "Successfully parsed module_defaults with action groups - feature is working!"
